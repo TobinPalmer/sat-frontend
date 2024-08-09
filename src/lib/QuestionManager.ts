@@ -1,5 +1,6 @@
 import Store, {type StorageType} from "$lib/Storage";
 import {url} from "$lib/index";
+import type {MultipleChoice, Question, ShortAnswer} from "$lib/types/response";
 
 export enum Difficulty {
     EASY = "Easy",
@@ -16,6 +17,7 @@ export enum QuestionType {
 
 interface GetQuestionOptions {
     difficulty: Difficulty
+    id: string
     type: QuestionType
     seen: string[]
     correct: string[]
@@ -52,18 +54,14 @@ export default class QuestionManager {
         return this.getProperty('correct');
     }
 
-    public async getQuestion(options: GetQuestionOptions) {
-        const queryString = new URLSearchParams({
-            difficulty: options.difficulty,
-            type: options.type,
-            seen: options.seen.join(","),
-            correct: options.correct.join(",")
-        }).toString();
+    public async getQuestion(options: Partial<GetQuestionOptions>): Promise<Question> {
+        const queryString = new URLSearchParams(options as Record<string, string>).toString()
 
         const res = await fetch(`${url}/math?${queryString}`)
         if (!res.ok) throw new Error("Failed to fetch question")
         const json = await res.json()
         if (json.error) throw new Error(json.error)
+        console.log("got the qeustion ", json)
         return json
     }
 }

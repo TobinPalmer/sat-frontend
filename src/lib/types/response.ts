@@ -13,3 +13,5 @@ export interface MultipleChoice {
     correctChoiceIndex: number
     answer: string
 }
+
+export type Question = ShortAnswer | MultipleChoice
