@@ -10,7 +10,7 @@
   //}
 
   :global(svg:has(+math)) {
-    //display: none;
-    border: 1px solid red;
+    display: none;
+    //border: 1px solid red;
   }
 </style>

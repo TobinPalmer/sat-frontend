@@ -21,6 +21,7 @@ interface GetQuestionOptions {
     type: QuestionType
     seen: string[]
     correct: string[]
+    unknown: boolean
 }
 
 export default class QuestionManager {

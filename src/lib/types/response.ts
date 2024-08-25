@@ -3,6 +3,7 @@ export interface ShortAnswer {
     question: string
     answer: string
     domain: string
+    correctAnswer: string[]
 }
 
 export interface MultipleChoice {
@@ -12,6 +13,7 @@ export interface MultipleChoice {
     domain: string
     correctChoiceIndex: number
     answer: string
+    correctAnswer: string[]
 }
 
 export type Question = ShortAnswer | MultipleChoice
