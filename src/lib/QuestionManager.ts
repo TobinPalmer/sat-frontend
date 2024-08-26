@@ -62,7 +62,6 @@ export default class QuestionManager {
         if (!res.ok) throw new Error("Failed to fetch question")
         const json = await res.json()
         if (json.error) throw new Error(json.error)
-        console.log("got the qeustion ", json)
         return json
     }
 }

@@ -3,17 +3,19 @@
     import 'mathlive'
     import DOMPurify from "isomorphic-dompurify";
     import QuestionManager from "$lib/QuestionManager";
+    import type {Question,} from "$lib/types/response";
+    import Modal from "$lib/components/Modal.svelte";
+
+    let question: Question | undefined = undefined
 
     async function getQuestion() {
-        return await QuestionManager.getInstance().getQuestion({
+        question = await QuestionManager.getInstance().getQuestion({
             // type: QuestionType.ALGEBRA,
             // id: "2704399f"
         })
+        return question
     }
-    // const x = await res.json() as MultipleChoice | ShortAnswer
-    // return {
-    //     ...x
-    // };
+
     function handleClick(event: MouseEvent) {
         const target = event.target as HTMLElement;
         const choice = target.closest('.question') as HTMLButtonElement;
@@ -21,20 +23,44 @@
             for (const sibling of choice.parentElement!.children) {
                 sibling.classList.remove('selected');
             }
+            selected = choice
+            selectedIdx = Array.from(choice.parentElement!.children).indexOf(choice)
             choice.classList.add('selected');
         }
     }
 
     function handleSubmit() {
-        const selected = document.querySelector('.selected');
+        // const selected = document.querySelector('.selected');
+        selected = document.querySelector('.selected')
+        const correctAnswer = question?.correctAnswer;
+        showModal = true
         if (selected) {
-            console.log(selected.textContent);
+            console.log(selected.textContent, correctAnswer);
         }
     }
 
+    let selected: HTMLButtonElement | null = null
+    let selectedIdx: number | null = null
+    $: showModal = false
 </script>
 
 <div>
+    <Modal bind:showModal>
+<!--        Selected Answer {selected?.classList}-->
+        {#if isMultipleChoice(question)}
+<!--            Correct Answer Index {question.correctChoiceIndex}-->
+<!--            Selected Index {selectedIdx}-->
+            {#if selectedIdx === question.correctChoiceIndex}
+                Correct Answer {selected?.textContent}
+            {:else}
+                Incorrect Answer {selected?.textContent}
+                ---
+                {question.answer}
+            {/if}
+        {:else}
+            Selected Answer {selected?.textContent}
+        {/if}
+    </Modal>
     {#await getQuestion()}
         <p>...Loading</p>
     {:then question}
@@ -42,19 +68,19 @@
         {@html DOMPurify.sanitize(question.question)}
         {#if isMultipleChoice(question)}
             <div class="questions-wrapper">
-            {#each question.choices as choice, i}
-                <button class="question choice-{i}" on:click={handleClick}>
-                    <span>{String.fromCharCode('a'.charCodeAt(0) + i)}</span>
-                    <!--    eslint-disable-next-line svelte/no-at-html-tags -->
-                   {@html DOMPurify.sanitize(choice)}
-                </button>
-            {/each}
+                {#each question.choices as choice, i}
+                    <button class="question choice-{i}" on:click={handleClick}>
+                        <span>{String.fromCharCode('a'.charCodeAt(0) + i)}</span>
+                        <!--    eslint-disable-next-line svelte/no-at-html-tags -->
+                        {@html DOMPurify.sanitize(choice)}
+                    </button>
+                {/each}
             </div>
         {:else}
-<!--            <input type="text" placeholder="Enter your answer here" />-->
+            <!--            <input type="text" placeholder="Enter your answer here" />-->
             <math-field>f(x)=</math-field>
         {/if}
-        <button class="submit" on:click={handleSubmit}>Check</button>
+        <button class="submit" on:click={handleSubmit}>Submit</button>
         <p>ANSWER: ||{question.correctAnswer}||</p>
     {:catch error}
         <p>{error.message}</p>
