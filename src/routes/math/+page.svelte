@@ -46,20 +46,18 @@
 
 <div>
     <Modal bind:showModal>
-<!--        Selected Answer {selected?.classList}-->
         {#if isMultipleChoice(question)}
-<!--            Correct Answer Index {question.correctChoiceIndex}-->
-<!--            Selected Index {selectedIdx}-->
             {#if selectedIdx === question.correctChoiceIndex}
-                Correct Answer {selected?.textContent}
+<!--                Correct Answer {selected?.textContent}-->
+                {question.correctAnswer[0]} is Correct!
             {:else}
-                Incorrect Answer {selected?.textContent}
-                ---
+                {String.fromCharCode('a'.charCodeAt(0) + (selectedIdx ?? 0))} is Incorrect!
+                <br>
+                The correct answer is {question.correctAnswer[0]}
+                <br>
                 {question.answer}
             {/if}
-        {:else}
-            Selected Answer {selected?.textContent}
-        {/if}
+            {/if}
     </Modal>
     {#await getQuestion()}
         <p>...Loading</p>
@@ -77,14 +75,16 @@
                 {/each}
             </div>
         {:else}
-            <!--            <input type="text" placeholder="Enter your answer here" />-->
-            <math-field>f(x)=</math-field>
+                <math-field style="width: 100%;"></math-field>
         {/if}
         <button class="submit" on:click={handleSubmit}>Submit</button>
-        <p>ANSWER: ||{question.correctAnswer}||</p>
     {:catch error}
         <p>{error.message}</p>
     {/await}
+
+    <button on:click={() => location && location.reload()}>
+    Next Question
+    </button>
 </div>
 
 <style lang="scss">

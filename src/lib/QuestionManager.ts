@@ -1,6 +1,6 @@
 import Store, {type StorageType} from "$lib/Storage";
 import {url} from "$lib/index";
-import type {MultipleChoice, Question, ShortAnswer} from "$lib/types/response";
+import type {Question} from "$lib/types/response";
 
 export enum Difficulty {
     EASY = "Easy",
